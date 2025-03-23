@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Form</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(45deg, #3f87a6, #ebf8e1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: rgba(34, 34, 34, 0.05);
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            height: 600px;
+            padding-top:95px ;
+            box-shadow: 5px 5px 10px #888888;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0e4350;
+            padding-bottom: 30px;
+            font-size:xx-large;
+            transition: all 2s ease;
+        }
+        h2:hover {
+            transform: scale(1.2);
+            color:#000000;
+        }
+       
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 15px;
+        }
+
+        label {
+            color: #0e4350;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 1s ease;
+            padding: 25px;
+
+}
+
+label:hover {
+    transform: scale(1.2);
+    color:#000000;
+
+}
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background-color: rgba(68, 68, 68, 0.05);
+            color: #000000;
+            min-width: 150px;
+            max-width: 300px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 24px;
+            background-color: #0e4350;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: all 1s ease;
+            font-weight: bold;
+
+        }
+
+        button:hover {
+            background-color: #000000;
+            transform: scale(1.1);
+
+        }
+.norm{      
+      font-style: initial;
+      margin-top: 50px;
+      color: #0e4350;
+      text-align: center;
+      font-weight: bold;
+      font-size:larger;
+      transition: all 2.5s ease; }
+.red {      
+      font-style: initial;
+      margin-top: 50px;
+      color: rgb(177, 6, 6);
+      text-align: center;
+      font-weight: bold;
+      font-size: x-large;
+      transition: all 2.5s ease; }
+.green {      
+      font-style: initial;
+      margin-top: 50px;
+      color: rgb(15, 114, 15);
+      text-align: center;
+      font-weight: bold;
+      font-size: x-large;
+      transition: all 2.5s ease;}
+
+.red:hover {
+       transform: scale(3.7);     
+       color:#ff0000;
+        }
+.green:hover {
+       transform: scale(3.7);     
+       color:rgb(57, 143, 57);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>News 🫠</h2>
+        <form id="prediction_form" action="/predict" method="post">
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author" required>
+            <label for="title">Title:</label>
+            <textarea id="title" name="title" rows="1" required></textarea>
+            <label for="text">Text:</label>
+            <textarea id="text" name="text" rows="6" required></textarea>
+            <button type="button" onclick="predict();">Predict</button>
+            <!-- زر مسح المدخلات -->
+            <button type="button" onclick="clearInputs();">Reset</button>
+        </form>
+        <div id="prediction_result" class="norm"><p>input details and predict please ...!</p></div>
+    </div>
+   
+    <script>
+ function clearInputs() {
+        // Checking if fields are filled before proceeding
+        if (document.getElementById('author').value === '' & document.getElementById('title').value === '' & document.getElementById('text').value === '') {
+            alert('all fields is already reseted');
+            return; // Stop executing the function if not filled
+        }
+        document.getElementById('author').value = ''; // Clear author value
+        document.getElementById('title').value = ''; // Clear title value
+        document.getElementById('text').value = ''; // Clear text value
+        // Resetting the paragraph content to default value
+        document.getElementById('prediction_result').innerHTML = '<p>input details and predict please ...!</p>';
+        // Resetting the class value to 'norm'
+        document.getElementById('prediction_result').className = 'norm';
+        // You can add more actions here to restore the interface to its original state
+    }
+
+function changeColor() {
+var header = document.getElementById('prediction_result');
+if(header.innerHTML == 'Fake news') {
+  header.className = 'red';
+} else if(header.innerHTML == 'Real news') {
+  header.className = 'green';
+} }
+function predict() {
+    var author = document.getElementById("author").value;
+    var title = document.getElementById("title").value;
+    var text = document.getElementById("text").value;
+
+    // Check if all fields are filled before proceeding
+    if (author === '' || title === '' || text === '') {
+        alert('Please fill in all fields before predicting!');
+        return; // Stop executing the function if any field is empty
+    }
+
+    // Make sure the TF-IDF transformer is trained before prediction
+    // Here you can replace '/fit_transform' with the correct path to train the transformer on your data
+ 
+        // Once the transformer is trained, execute the prediction
+        fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                author: author,
+                title: title,
+                text: text
+            })
+        })
+        .then(response => response.text())
+        .then(result => {
+            document.getElementById("prediction_result").innerText = result;changeColor();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+ 
+
+
+
+    </script>   
+</body>
+</html>
+
+
